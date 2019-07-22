@@ -1,6 +1,8 @@
 # Cuboid Remap
 
-This is a python package which implements an algorithm to remap cubical domains with periodic boundary conditons (PBCs) to simple cuboid shapes.  
+This is a python package which implements an algorithm to remap cubical domains with periodic boundary conditons (PBCs) to simple cuboid shapes. 
+
+![](./notebooks/2d_demo.png) 
 
 
 ## Description
