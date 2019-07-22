@@ -6,7 +6,7 @@ import numpy as np
 from copy import deepcopy
 from itertools import combinations_with_replacement
 from cuboid_remap.cuboid import Cuboid
-from cuboid_remap.utils import triple_scalar_product, gcd, length, coprime_triples
+from cuboid_remap.utils import triple_scalar_product, gcd, coprime_triples
 from itertools import permutations
 import sys
 from numba import jit
