@@ -1,6 +1,6 @@
 # Cuboid Remap
 
-This is a python package which implements an algorithm to remap cubical domains with periodic boundary conditons (PBCs) to simple simple non-cubical shapes.  
+This is a python package which implements an algorithm to remap cubical domains with periodic boundary conditons (PBCs) to simple cuboid shapes.  
 
 
 ## Description
@@ -13,7 +13,6 @@ The original implementation of this alogrithm by Jordan Carlson and Martin White
 In order to use the functions in this package, you will need the following Python packages installed:
 
 * [numpy](http://www.numpy.org)
-* [rotations](https://github.com/duncandc/rotations)
 
 
 ## Installation
