@@ -1,5 +1,5 @@
 """
-utility classes and functions
+utility functions for cuboid_remap
 """
 
 import sys

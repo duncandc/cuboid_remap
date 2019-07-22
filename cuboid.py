@@ -1,110 +1,44 @@
 """
+cuboid class and related objects
+
+This code is a simple rewrite of Jordan Carlson and Martin White's code.
+
+I have removed the dependence on the vec3 class in the original implementation in
+favor of off-the-shelf numpy vector objects and functions.
 """
 
-from __future__ import print_function
+from __future__ import print_function, division
 from math import floor, ceil, fmod
 import numpy as np
 from cuboid_remap.utils import triple_scalar_product
 
 
-class Plane:
-    """
-    class to represent a plane in 3-D cartesian space
-    """
-    def __init__(self, p, n):
-        """
-        Parameters
-        ----------
-        p : array_like
-            a point in a plane
-
-        n : array_like
-            a vector normal to the plane
-        """
-        self.normal = n
-        self.a = n[0]
-        self.b = n[1]
-        self.c = n[2]
-        self.d = -1.0*np.dot(p,n)
-
-    def above(self, x, y, z):
-        """
-        Compare a point to a plane.
-
-        Parameters
-        ----------
-        x, y, z : float
-             coordinates of a point
-
-        Returns
-        -------
-        above : float
-            value is positive, negative, or zero depending on whether
-            the point lies above, below, or on the plane.
-        """
-        return self.a*x + self.b*y + self.c*z + self.d
-
-
-class Cell:
-    """
-    class to represent a cell
-    """
-    def __init__(self, ix=0, iy=0, iz=0):
-        """
-        """
-        self.ix = ix
-        self.iy = iy
-        self.iz = iz
-        # collection of planes that define the faces of the cell
-        self.faces = []
-
-    def contains(self, x, y, z):
-        """
-        determine if the cell contains a point
-        """
-        for f in self.faces:
-            if f.above(x,y,z) < 0:
-                return False
-        return True
-
-    
-def UnitCubeTest(P):
-    """
-    
-
-    Parameters
-    ----------
-    P : plane
-        a plane object
-
-    Returns
-    -------
-    location : int 
-        +1, 0, or -1 if the unit cube is above, below, or intersecting the plane.
-    """
-
-    above = 0
-    below = 0
-
-    corners = [(0,0,0), (0,0,1), (0,1,0), (0,1,1),
-               (1,0,0), (1,0,1), (1,1,0), (1,1,1)]
-    for (a,b,c) in corners:
-        s = P.above(a, b, c)
-        if s > 0:
-            above = 1
-        elif s < 0:
-            below = 1
-    return above - below
+__all__=['Cuboid', 'Plane', 'Cell', 'unitCubeTest',]
+__author__ = ['Duncan Campbell', 'see doc string note']
 
 
 class Cuboid:
     """
-    Cuboid remapping class.
+    cuboid remapping class.
     """
 
     def __init__(self, u1=[1,0,0], u2=[0,1,0], u3=[0,0,1]):
         """
-        Initialize by passing a 3x3 invertible integer matrix.
+        Parameters
+        ----------
+        u1 : array_like
+            lattice vector, integer array of length 3
+
+        u2 : array_like
+            lattice vector, integer array of length 3
+
+        u3 : array_like
+            lattice vector, integer array of length 3
+
+        Notes
+        -----
+        u1,u2,u3 form an unimodular invertable 3x3 integer matrix.
+        See the functions the remap.py to select lattive vectors
         """
         u1 = np.atleast_1d(u1).astype('float64')
         u2 = np.atleast_1d(u2).astype('float64')
@@ -174,12 +108,12 @@ class Cuboid:
                     c = Cell(ix, iy, iz)
                     skipcell = False
                     for f in faces:
-                        r = UnitCubeTest(f)
+                        r = unitCubeTest(f)
                         if r == +1:
-                            # Unit cube is completely above this plane; this cell is empty
+                            # unit cube is completely above this plane--this cell is empty
                             continue
                         elif r == 0:
-                            # Unit cube intersects this plane; keep track of it
+                            # unit cube intersects this plane--keep track of it
                             c.faces.append(f)
                         elif r == -1:
                             skipcell = True
@@ -190,12 +124,13 @@ class Cuboid:
                     else:
                         self.cells.append(c)
 
-        # For the identity remapping, use exactly one cell
+        # for the identity remapping, use exactly one cell
         if len(self.cells) == 0:
             self.cells.append(Cell())
 
     def Transform(self, x, y, z):
         """
+        Transform coordinates
         """
         for c in self.cells:
             if c.contains(x,y,z):
@@ -209,10 +144,100 @@ class Cuboid:
 
     def InverseTransform(self, r1, r2, r3):
         """
+        Inverse transform coordinates
         """
         p = r1*self.n1 + r2*self.n2 + r3*self.n3
         x1 = fmod(p[0], 1) + (p[0] < 0)
         x2 = fmod(p[1], 1) + (p[1] < 0)
         x3 = fmod(p[2], 1) + (p[2] < 0)
         return np.array([x1, x2, x3])
+
+class Plane:
+    """
+    class to represent a plane in 3-D cartesian space
+    """
+    def __init__(self, p, n):
+        """
+        Parameters
+        ----------
+        p : array_like
+            a point in a plane
+
+        n : array_like
+            a vector normal to the plane
+        """
+        self.normal = n
+        self.a = n[0]
+        self.b = n[1]
+        self.c = n[2]
+        self.d = -1.0*np.dot(p,n)
+
+    def above(self, x, y, z):
+        """
+        Compare a point to a plane.
+
+        Parameters
+        ----------
+        x, y, z : float
+             coordinates of a point
+
+        Returns
+        -------
+        above : float
+            value is positive, negative, or zero depending on whether
+            the point lies above, below, or on the plane.
+        """
+        return self.a*x + self.b*y + self.c*z + self.d
+
+
+class Cell:
+    """
+    class to represent a cell
+    """
+    def __init__(self, ix=0, iy=0, iz=0):
+        """
+        """
+        self.ix = ix
+        self.iy = iy
+        self.iz = iz
+        # collection of planes that define the faces of the cell
+        self.faces = []
+
+    def contains(self, x, y, z):
+        """
+        determine if the cell contains a point
+        """
+        for f in self.faces:
+            if f.above(x,y,z) < 0:
+                return False
+        return True
+
+    
+def unitCubeTest(P):
+    """
+    Detemrine if a unit cube is above, below, or intersecting a plane
+
+    Parameters
+    ----------
+    P : plane object
+
+    Returns
+    -------
+    u : int 
+        [+1, 0, -1] if the unit cube is above, below, or intersecting the plane.
+    """
+
+    above = 0
+    below = 0
+
+    corners = [(0,0,0), (0,0,1), (0,1,0), (0,1,1),
+               (1,0,0), (1,0,1), (1,1,0), (1,1,1)]
+    for (a,b,c) in corners:
+        s = P.above(a, b, c)
+        if s > 0:
+            above = 1
+        elif s < 0:
+            below = 1
+    return above - below
+
 

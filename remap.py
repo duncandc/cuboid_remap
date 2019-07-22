@@ -3,15 +3,15 @@
 
 from __future__ import print_function, division
 import numpy as np
+import sys
 from copy import deepcopy
-from itertools import combinations_with_replacement
+from itertools import combinations_with_replacement, permutations
 from cuboid_remap.cuboid import Cuboid
 from cuboid_remap.utils import triple_scalar_product, gcd, coprime_triples
-from itertools import permutations
-import sys
-from numba import jit
 
-__all__=['remap',]
+
+__all__=['remap', 'remap_Lbox', 'generate_lattice_vectors']
+__author__=['Duncan Campbell',]
 
 
 def remap(coords, u1=[1,0,0], u2=[0,1,0], u3=[0,0,1]):
