@@ -25,14 +25,18 @@ def remap(coords, u1=[1,0,0], u2=[0,1,0], u3=[0,0,1]):
 
     Returns
     -------
-    coords : numpy.array
+    new_coords : numpy.array
         remaped coordinates
     """
 
     coords = deepcopy(coords)
+    coords = np.atleast_1d(coords)
+
+    assert np.shape(coords)[1]==(3)
 
     C = Cuboid(u1, u2, u3)
 
+    # loop through each coordinate
     Npts = np.shape(coords)[0]
     for i in range(Npts):
         coords[i,:] = C.Transform(coords[i,0], coords[i,1], coords[i,2])
@@ -97,6 +101,7 @@ def generate_lattice_vectors(max_int=5):
     Parameters
     ----------
     max_int : int
+        maximum value for a matrix element
 
     Returns
     -------
