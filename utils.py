@@ -3,96 +3,34 @@ utility classes and functions
 """
 
 import sys
-from math import *
 import numpy as np
 
 
-class vec3(np.ndarray):
-    """
-    a simple 3D vector class
-    """
-    def __new__(cls, *args):
-        """
-        create a new vec3 object
-
-        Parameters
-        ----------
-        v : array_like, optional
-            length 3 array defining a 3-vector.
-            if not passed, v is set to [0,0,0] 
-        
-        Notes
-        -----
-        instead of passing an array_like object, v, to intialize, 
-        you may pass three floats.
-        """
-        a = np.ndarray.__new__(vec3, (3,), float)
-        
-        if len(args) == 0:
-            a[0] = a[1] = a[2] = 0
-        elif len(args) == 1:
-            v = args[0]
-            a[0] = v[0]
-            a[1] = v[1]
-            a[2] = v[2]
-        elif len(args) == 3:
-            print(args)
-            a[0] = args[0]
-            a[1] = args[1]
-            a[2] = args[2]
-        else:
-            raise RuntimeError
-        
-        return a
-
-    def _getx(self): 
-        return self[0]
-
-    def _gety(self): 
-        return self[1]
-
-    def _getz(self): 
-        return self[2]
-
-    def _setx(self, value):
-        self[0] = value
-
-    def _sety(self, value):
-        self[1] = value
-
-    def _setz(self, value):
-        self[2] = value
-    
-    # define property attributes
-    x = property(_getx, _setx)  # (fget, fset, fdel, doc_string)
-    y = property(_gety, _sety)  # (fget, fset, fdel, doc_string)
-    z = property(_getz, _setz)  # (fget, fset, fdel, doc_string)
-
-
-def dot(u, v):
-    """
-    vector dot product
-    """
-    return u[0]*v[0] + u[1]*v[1] + u[2]*v[2]
-
-
-def square(v):
-    """
-    vector magnitude squared
-    """
-    return v[0]**2 + v[1]**2 + v[2]**2
-
-
-def length(v):
-    """
-    vector magnitude
-    """
-    return sqrt(square(v))
+__all__=['triple_scalar_product', 'gcd', 'coprime_triples',]
+__author__ = ['Duncan Campbell',]
 
 
 def triple_scalar_product(u, v, w):
     """
     triple scalar product of three vectors
+
+    Parameters
+    ----------
+    u : 
+
+    v : 
+
+    w : 
+
+
+    Returns
+    -------
+    p : float
+        the triple scalar product of u,v,w
+
+    Notes
+    -----
+    This is the same as the determinent for a matrix composed of u,v,w
     """
     return u[0]*(v[1]*w[2] - v[2]*w[1]) +\
            u[1]*(v[2]*w[0] - v[0]*w[2]) +\
@@ -100,9 +38,9 @@ def triple_scalar_product(u, v, w):
 
 def gcd(*args):
     """
-    greatest common integer divisor
+    return the greatest common integer divisor
 
-    parameters
+    Parameters
     ----------
     a : int
 
@@ -111,9 +49,23 @@ def gcd(*args):
     ...
 
     n : int
+
+
+    Returns
+    -------
+    x : int
+        greatest common integer divisor
+
+
+    Notes
+    -----
+    recursive algorithm implemented
     """
+
+    # return self if a single number is passed
     if len(args)==1:
         return args[0]
+    # pairwise case
     elif len(args)==2:
         a = args[0]
         b = args[1]
@@ -129,8 +81,8 @@ def gcd(*args):
             b = a % b
             a = tmp
         return a
+    # if greater than two arguments, recurse
     else:
-        # recursive call
         a = args[0]
         b = gcd(*args[1:])
         return gcd(a,b)
